@@ -45,6 +45,28 @@ header p {
   font-style: italic;
 }
 
+header nav {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 0.9rem;
+}
+
+header nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+header nav a:hover,
+header nav a.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 main {
   max-width: 920px;
   margin: 0 auto;

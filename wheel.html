@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restriction Wheel — EDH</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="wheel.css">
+</head>
+<body>
+  <header>
+    <h1>EDH Restriction Wheel</h1>
+    <nav>
+      <a href="index.html">Random Commander</a>
+      <a href="wheel.html" class="active">Restriction Wheel</a>
+    </nav>
+  </header>
+
+  <main class="wheel-main">
+    <div class="wheel-area">
+      <div class="wheel-wrapper">
+        <canvas id="wheel-canvas" width="500" height="500"></canvas>
+      </div>
+      <button id="spin-btn">Spin</button>
+      <div id="result-display" class="hidden">
+        <span class="result-label">Your restriction:</span>
+        <span id="result-text"></span>
+      </div>
+    </div>
+
+    <aside class="options-panel">
+      <h2>Options</h2>
+      <ul id="options-list"></ul>
+      <div class="add-option">
+        <input type="text" id="new-option-input" placeholder="New option…" maxlength="40">
+        <button id="add-option-btn">Add</button>
+      </div>
+    </aside>
+  </main>
+
+  <script src="wheel.js"></script>
+</body>
+</html>
