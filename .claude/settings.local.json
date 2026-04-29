@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(pip install -r requirements.txt)",
+      "PowerShell(python scripts/fetch_commanders.py)",
+      "PowerShell(python -m pip install requests)",
+      "PowerShell(Start-Process \"http://localhost:8080\")",
+      "PowerShell(python -m http.server 8080)"
+    ]
+  }
+}
