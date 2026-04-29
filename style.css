@@ -1,14 +1,14 @@
 :root {
-  --bg: #0d0d1a;
-  --bg-card: #12122a;
-  --bg-panel: #1a1a35;
-  --border: #2e2e5e;
-  --accent: #c9a84c;
-  --accent-hover: #e8c66a;
-  --text: #e0deff;
-  --text-muted: #7a7aaa;
-  --danger: #e05050;
-  --shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  --bg: #1e2338;
+  --bg-card: #262d46;
+  --bg-panel: #222a42;
+  --border: #323d5e;
+  --accent: #5b9fd6;
+  --accent-hover: #7bbae8;
+  --text: #dde5f5;
+  --text-muted: #7888ab;
+  --danger: #d96868;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
 }
 
 * {
@@ -29,13 +29,13 @@ header {
   text-align: center;
   padding: 3rem 1rem 2rem;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, #080812 0%, var(--bg) 100%);
+  background: linear-gradient(180deg, #141928 0%, var(--bg) 100%);
 }
 
 header h1 {
   font-size: 2.5rem;
   color: var(--accent);
-  text-shadow: 0 0 24px rgba(201, 168, 76, 0.4);
+  text-shadow: 0 0 24px rgba(91, 159, 214, 0.45);
   letter-spacing: 0.06em;
 }
 
@@ -163,7 +163,7 @@ main {
 .filter-btn.active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #0d0d1a;
+  color: #fff;
   font-weight: bold;
 }
 
@@ -203,22 +203,22 @@ main {
   max-width: 300px;
   margin: 0 auto 2.5rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #8b6914, var(--accent));
+  background: linear-gradient(135deg, #2e5a8a, var(--accent));
   border: none;
   border-radius: 6px;
-  color: #0d0d1a;
+  color: #fff;
   font-size: 1.2rem;
   font-family: 'Georgia', serif;
   font-weight: bold;
   cursor: pointer;
   letter-spacing: 0.06em;
-  box-shadow: 0 2px 14px rgba(201, 168, 76, 0.3);
+  box-shadow: 0 2px 14px rgba(91, 159, 214, 0.3);
   transition: all 0.2s;
 }
 
 #generate-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #9d7820, var(--accent-hover));
-  box-shadow: 0 4px 22px rgba(201, 168, 76, 0.5);
+  background: linear-gradient(135deg, #3a6ea0, var(--accent-hover));
+  box-shadow: 0 4px 22px rgba(91, 159, 214, 0.45);
   transform: translateY(-1px);
 }
 

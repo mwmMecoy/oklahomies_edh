@@ -17,7 +17,7 @@ const DEFAULTS = [
 ];
 
 const COLORS = [
-  '#c9a84c',
+  '#c084fc',
   '#2266cc',
   '#cc3333',
   '#22884a',
@@ -107,15 +107,15 @@ function drawWheel() {
 
   ctx.beginPath();
   ctx.arc(CX, CY, RADIUS, 0, 2 * Math.PI);
-  ctx.strokeStyle = '#c9a84c';
+  ctx.strokeStyle = '#5b9fd6';
   ctx.lineWidth = 3;
   ctx.stroke();
 
   ctx.beginPath();
   ctx.arc(CX, CY, 16, 0, 2 * Math.PI);
-  ctx.fillStyle = '#0d0d1a';
+  ctx.fillStyle = '#1e2338';
   ctx.fill();
-  ctx.strokeStyle = '#c9a84c';
+  ctx.strokeStyle = '#5b9fd6';
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -131,11 +131,11 @@ function drawPointer() {
   ctx.lineTo(CX - 13, baseY);
   ctx.lineTo(CX + 13, baseY);
   ctx.closePath();
-  ctx.fillStyle = '#c9a84c';
-  ctx.shadowColor = 'rgba(201,168,76,0.7)';
+  ctx.fillStyle = '#5b9fd6';
+  ctx.shadowColor = 'rgba(91,159,214,0.7)';
   ctx.shadowBlur = 8;
   ctx.fill();
-  ctx.strokeStyle = '#0d0d1a';
+  ctx.strokeStyle = '#1e2338';
   ctx.lineWidth = 1;
   ctx.shadowBlur = 0;
   ctx.stroke();
