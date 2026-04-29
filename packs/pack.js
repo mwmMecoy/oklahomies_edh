@@ -32,9 +32,11 @@ function getPackConfig(setMeta) {
     return { totalCards: 15, rares: 1, foils: 1, uncommons: 3, commons: 10, basics: 0 };
   }
 
-  // Play Booster era (MKM Feb 2024+): 14 cards, wildcard slots
+  // Play Booster era (MKM Feb 2024+): 14 cards
+  // Slots: 6 commons + 1 common-or-list + 3 uncommons + 1 non-foil wildcard + 1 rare/mythic + 1 basic + 1 foil wildcard
+  // Mythic rate is 1/8 (12.5%), different from the standard ~22%
   if (setMeta.released_at >= PLAY_BOOSTER_FROM) {
-    return { totalCards: 14, rares: 1, uncommons: 3, commons: 6, basics: 1, wildcards: 2 };
+    return { totalCards: 14, rares: 1, mythicRate: 1 / 8, uncommons: 3, commons: 7, basics: 1, wildcards: 1, foilWildcards: 1 };
   }
 
   // Mythic era (Shards of Alara Oct 2008 – Jan 2024): standard 15-card pack
@@ -53,6 +55,7 @@ function packDescription(config) {
   if (config.legendarySlots) parts.push(`${config.legendarySlots} Legendary`);
   if (config.foils) parts.push(`${config.foils} Foil`);
   if (config.wildcards) parts.push(`${config.wildcards} Wildcard`);
+  if (config.foilWildcards) parts.push(`${config.foilWildcards} Foil Wildcard`);
   parts.push(`${config.uncommons} Uncommon`);
   parts.push(`${config.commons} Common`);
   if (config.conspiracySlot) parts.push('1 Conspiracy');
@@ -95,9 +98,10 @@ function crackPack(setData, setMeta) {
   const pack = [];
 
   // Rare / Mythic slot(s)
+  const mythicRate = config.mythicRate ?? MYTHIC_RATE;
   const hasMythics = !config.noMythics && setData.mythics.length > 0;
   for (let i = 0; i < (config.rares || 1); i++) {
-    const isMythic = hasMythics && Math.random() < MYTHIC_RATE;
+    const isMythic = hasMythics && Math.random() < mythicRate;
     const pool = isMythic ? setData.mythics : setData.rares;
     pack.push({ ...pickUnique(pool, pack), slot: 'rare', isMythic });
   }
@@ -136,10 +140,18 @@ function crackPack(setData, setMeta) {
     pack.push({ ...pickUnique(setData.conspiracies, pack), slot: 'special' });
   }
 
-  // Wildcard slots (Play Boosters)
+  // Non-foil wildcard slot (Play Boosters, slot #11)
   if (config.wildcards) {
     for (let i = 0; i < config.wildcards; i++) {
       pack.push(pickWildcard(setData, pack));
+    }
+  }
+
+  // Foil wildcard slot (Play Boosters, slot #14)
+  if (config.foilWildcards) {
+    for (let i = 0; i < config.foilWildcards; i++) {
+      const wc = pickWildcard(setData, pack);
+      pack.push({ ...wc, isFoil: true });
     }
   }
 
@@ -172,6 +184,8 @@ function crackPack(setData, setMeta) {
 let setsIndex = [];
 let currentSetData = null;
 let currentSetMeta = null;
+let currentPack = null;
+let hiddenMode = false;
 
 async function loadIndex() {
   const el = document.getElementById('set-select');
@@ -237,10 +251,22 @@ function buildSetSelector(sets) {
 
 const SLOT_ORDER = { rare: 0, foil: 1, legendary: 2, special: 3, wildcard: 4, uncommon: 5, common: 6, land: 7 };
 
+function applyCardClasses(wrapper, card) {
+  if (card.isMythic) wrapper.classList.add('mythic');
+  else if (card.slot === 'rare') wrapper.classList.add('rare');
+  if (card.isFoil) wrapper.classList.add('foil');
+  if (card.slot === 'legendary') wrapper.classList.add('legendary');
+  if (card.slot === 'wildcard' && (card.wildcardRarity === 'rare' || card.wildcardRarity === 'mythic')) {
+    wrapper.classList.add(card.wildcardRarity === 'mythic' ? 'mythic' : 'rare');
+  }
+}
+
 function displayPack(pack) {
+  currentPack = pack;
   const container = document.getElementById('pack-display');
   container.innerHTML = '';
   container.classList.remove('hidden');
+  document.getElementById('export-btn').classList.remove('hidden');
 
   const sorted = [...pack].sort(
     (a, b) => (SLOT_ORDER[a.slot] ?? 5) - (SLOT_ORDER[b.slot] ?? 5)
@@ -251,12 +277,10 @@ function displayPack(pack) {
     wrapper.className = 'pack-card';
     wrapper.style.animationDelay = `${i * 40}ms`;
 
-    if (card.isMythic) wrapper.classList.add('mythic');
-    else if (card.slot === 'rare') wrapper.classList.add('rare');
-    if (card.isFoil) wrapper.classList.add('foil');
-    if (card.slot === 'legendary') wrapper.classList.add('legendary');
-    if (card.slot === 'wildcard' && (card.wildcardRarity === 'rare' || card.wildcardRarity === 'mythic')) {
-      wrapper.classList.add(card.wildcardRarity === 'mythic' ? 'mythic' : 'rare');
+    if (hiddenMode) {
+      wrapper.classList.add('face-down');
+    } else {
+      applyCardClasses(wrapper, card);
     }
 
     if (card.image_uri) {
@@ -283,16 +307,112 @@ function displayPack(pack) {
     if (badges.length) label.innerHTML = badges.join('');
     wrapper.appendChild(label);
 
+    wrapper.addEventListener('click', () => {
+      if (wrapper.classList.contains('face-down')) {
+        revealCard(wrapper, card);
+      } else {
+        openCardModal(card);
+      }
+    });
+
     container.appendChild(wrapper);
   });
+}
+
+function revealCard(wrapper, card) {
+  applyCardClasses(wrapper, card);
+  wrapper.style.transition = 'transform 0.5s ease';
+  wrapper.classList.remove('face-down');
+  wrapper.addEventListener('transitionend', () => {
+    wrapper.style.transition = '';
+  }, { once: true });
+}
+
+// ── Card modal ───────────────────────────────────────────────────
+
+async function openCardModal(card) {
+  const modal = document.getElementById('card-modal');
+  modal.classList.remove('hidden');
+
+  document.getElementById('modal-name').textContent = card.name;
+  document.getElementById('modal-mana').textContent = card.mana_cost || '';
+  document.getElementById('modal-type').textContent = card.type_line || '';
+  document.getElementById('modal-oracle').textContent = '';
+  document.getElementById('modal-pt').textContent = '';
+  document.getElementById('modal-img').src = card.image_uri || '';
+  document.getElementById('modal-img').alt = card.name;
+
+  const scryfallLink = document.getElementById('modal-scryfall-link');
+  const edhrecLink = document.getElementById('modal-edhrec-link');
+  scryfallLink.href = '#';
+  const slug = card.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  edhrecLink.href = `https://edhrec.com/cards/${slug}`;
+
+  try {
+    const setCode = currentSetMeta.code.toLowerCase();
+    const resp = await fetch(
+      `https://api.scryfall.com/cards/${setCode}/${encodeURIComponent(card.collector_number)}`
+    );
+    if (!resp.ok) throw new Error(resp.status);
+    const data = await resp.json();
+
+    const oracle = data.oracle_text
+      || (data.card_faces && data.card_faces.map(f => f.oracle_text).join('\n---\n'))
+      || '';
+    document.getElementById('modal-oracle').textContent = oracle;
+
+    if (data.power != null) {
+      document.getElementById('modal-pt').textContent = `${data.power} / ${data.toughness}`;
+    } else if (data.loyalty != null) {
+      document.getElementById('modal-pt').textContent = `Loyalty: ${data.loyalty}`;
+    }
+
+    scryfallLink.href = data.scryfall_uri || scryfallLink.href;
+  } catch {
+    // Basic card info already shown; oracle text will just be empty
+  }
+}
+
+function closeModal() {
+  document.getElementById('card-modal').classList.add('hidden');
+}
+
+// ── Export ───────────────────────────────────────────────────────
+
+function exportPack() {
+  if (!currentPack) return;
+  const lines = currentPack.map(c => `1 ${c.name}`).join('\n');
+  const btn = document.getElementById('export-btn');
+  const finish = () => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy List'; }, 1500);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(lines).then(finish).catch(() => fallbackCopy(lines, finish));
+  } else {
+    fallbackCopy(lines, finish);
+  }
+}
+
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  cb();
 }
 
 // ── Init ────────────────────────────────────────────────────────
 
 document.getElementById('set-select').addEventListener('change', function () {
   document.getElementById('pack-display').classList.add('hidden');
+  document.getElementById('export-btn').classList.add('hidden');
   document.getElementById('crack-btn').disabled = true;
   document.getElementById('pack-info').textContent = '';
+  currentPack = null;
   if (this.value) loadSet(this.value);
 });
 
@@ -300,6 +420,20 @@ document.getElementById('crack-btn').addEventListener('click', () => {
   if (!currentSetData || !currentSetMeta) return;
   const pack = crackPack(currentSetData, currentSetMeta);
   displayPack(pack);
+});
+
+document.getElementById('hidden-toggle').addEventListener('change', function () {
+  hiddenMode = this.checked;
+});
+
+document.getElementById('export-btn').addEventListener('click', exportPack);
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('card-modal').addEventListener('click', function (e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
 });
 
 loadIndex();

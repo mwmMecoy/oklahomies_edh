@@ -26,11 +26,43 @@
         </select>
         <button id="crack-btn" disabled>Crack Pack</button>
       </div>
+      <div class="pack-options-row">
+        <label class="toggle-wrap" title="Cards start face-down; click each to reveal">
+          <input type="checkbox" id="hidden-toggle">
+          <span class="toggle-slider"></span>
+          <span class="toggle-label-text">Hidden Pack</span>
+        </label>
+        <button id="export-btn" class="export-btn hidden">Copy List</button>
+      </div>
       <span id="pack-info"></span>
     </div>
 
     <div id="pack-display" class="hidden"></div>
   </main>
+
+  <div id="card-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button id="modal-close" class="modal-close" aria-label="Close">&#x2715;</button>
+      <div class="modal-body">
+        <div class="modal-img-wrap">
+          <img id="modal-img" alt="">
+        </div>
+        <div class="modal-details">
+          <div class="modal-header">
+            <h2 id="modal-name"></h2>
+            <span id="modal-mana" class="modal-mana"></span>
+          </div>
+          <p id="modal-type" class="modal-type"></p>
+          <div id="modal-oracle" class="modal-oracle"></div>
+          <p id="modal-pt" class="modal-pt"></p>
+          <div class="modal-links">
+            <a id="modal-scryfall-link" href="#" target="_blank" rel="noopener">View on Scryfall</a>
+            <a id="modal-edhrec-link" href="#" target="_blank" rel="noopener">View on EDHREC</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="pack.js"></script>
 </body>
