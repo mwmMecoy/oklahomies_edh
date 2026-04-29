@@ -1,5 +1,7 @@
 # Oklahomies EDH — Random Commander
 
+https://mwmmecoy.github.io/oklahomies_edh/
+
 Generates a random MTG commander with card art and details from Scryfall. 
 
 Hosted on GitHub Pages.

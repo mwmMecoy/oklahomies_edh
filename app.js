@@ -55,6 +55,7 @@ let allCommanders = [];
 let filteredCommanders = [];
 let selectedColorCount = null;
 let selectedColorCombo = null;
+let pauperOnly = false;
 
 async function init() {
   initColorFilters();
@@ -100,6 +101,8 @@ function applyFilters() {
       if (minCmc !== null && c.cmc < minCmc) return false;
       if (maxCmc !== null && c.cmc > maxCmc) return false;
     }
+
+    if (pauperOnly && c.rarity !== 'uncommon') return false;
 
     if (selectedColorCount !== null) {
       const ci = c.color_identity || [];
@@ -249,5 +252,11 @@ document.getElementById('generate-btn').addEventListener('click', rollCommander)
 ['min-rank', 'max-rank', 'min-cmc', 'max-cmc'].forEach(id =>
   document.getElementById(id).addEventListener('input', applyFilters)
 );
+document.getElementById('pauper-toggle').addEventListener('click', function () {
+  pauperOnly = !pauperOnly;
+  this.dataset.active = pauperOnly;
+  this.classList.toggle('active', pauperOnly);
+  applyFilters();
+});
 
 init();

@@ -79,6 +79,7 @@ def main() -> None:
             "power": card.get("power"),
             "toughness": card.get("toughness"),
             "cmc": card.get("cmc"),
+            "rarity": card.get("rarity"),
             "scryfall_uri": card.get("scryfall_uri", ""),
             "set_name": card.get("set_name", ""),
         })
