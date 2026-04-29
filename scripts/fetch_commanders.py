@@ -24,7 +24,7 @@ def is_commander(card: dict) -> bool:
         return False
     type_line = card.get("type_line", "")
     oracle = card.get("oracle_text", "")
-    return "Legendary Creature" in type_line or "can be your commander" in oracle
+    return ("Legendary" in type_line and "Creature" in type_line) or "can be your commander" in oracle
 
 
 def get_image_uri(card: dict) -> str | None:
