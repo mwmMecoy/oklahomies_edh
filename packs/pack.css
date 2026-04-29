@@ -276,24 +276,19 @@
 
 /* ── Face-down (hidden pack) ──────────────────────────────────── */
 
-.pack-card.face-down {
-  transform: rotate(180deg);
-  animation: cardRevealDown 0.35s ease both;
-  cursor: pointer;
-}
-
-.pack-card.face-down:hover {
-  transform: rotate(180deg) translateY(-4px) scale(1.03);
-  z-index: 10;
-}
-
 .pack-card.face-down .card-label {
   display: none;
 }
 
-@keyframes cardRevealDown {
-  from { opacity: 0; transform: translateY(12px) rotateX(8deg) rotate(180deg); }
-  to   { opacity: 1; transform: rotate(180deg); }
+.pack-card.card-flip {
+  animation: cardFlip 0.36s ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes cardFlip {
+  0%   { transform: scaleX(1); }
+  50%  { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
 }
 
 /* ── Card modal ───────────────────────────────────────────────── */

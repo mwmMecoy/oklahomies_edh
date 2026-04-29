@@ -279,21 +279,25 @@ function displayPack(pack) {
 
     if (hiddenMode) {
       wrapper.classList.add('face-down');
-    } else {
-      applyCardClasses(wrapper, card);
-    }
-
-    if (card.image_uri) {
       const img = document.createElement('img');
-      img.src = card.image_uri;
-      img.alt = card.name;
+      img.src = '../data/cardback.jpg';
+      img.alt = 'Card back';
       img.loading = 'lazy';
       wrapper.appendChild(img);
     } else {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'card-placeholder';
-      placeholder.textContent = card.name;
-      wrapper.appendChild(placeholder);
+      applyCardClasses(wrapper, card);
+      if (card.image_uri) {
+        const img = document.createElement('img');
+        img.src = card.image_uri;
+        img.alt = card.name;
+        img.loading = 'lazy';
+        wrapper.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'card-placeholder';
+        placeholder.textContent = card.name;
+        wrapper.appendChild(placeholder);
+      }
     }
 
     const label = document.createElement('div');
@@ -317,14 +321,51 @@ function displayPack(pack) {
 
     container.appendChild(wrapper);
   });
+
+  // Kick off background preload for all real card images so flips are instant
+  if (hiddenMode) {
+    sorted.forEach(c => { if (c.image_uri) new Image().src = c.image_uri; });
+  }
 }
 
 function revealCard(wrapper, card) {
-  applyCardClasses(wrapper, card);
-  wrapper.style.transition = 'transform 0.5s ease';
-  wrapper.classList.remove('face-down');
-  wrapper.addEventListener('transitionend', () => {
-    wrapper.style.transition = '';
+  if (!card.image_uri) {
+    doFlip(wrapper, card);
+    return;
+  }
+  // Preload the real image before starting so it renders instantly on expansion
+  let started = false;
+  const go = () => { if (!started) { started = true; doFlip(wrapper, card); } };
+  const preload = new Image();
+  preload.onload = go;
+  preload.onerror = go;
+  preload.src = card.image_uri;
+  if (preload.complete) go();
+}
+
+function doFlip(wrapper, card) {
+  const FLIP_HALF = 180;
+  wrapper.classList.add('card-flip');
+
+  setTimeout(() => {
+    const img = wrapper.querySelector('img');
+    if (img) {
+      if (card.image_uri) {
+        img.src = card.image_uri;
+        img.alt = card.name;
+      } else {
+        img.replaceWith(Object.assign(document.createElement('div'), {
+          className: 'card-placeholder',
+          textContent: card.name,
+        }));
+      }
+    }
+    applyCardClasses(wrapper, card);
+    wrapper.classList.remove('face-down');
+  }, FLIP_HALF);
+
+  wrapper.addEventListener('animationend', () => {
+    wrapper.classList.remove('card-flip');
   }, { once: true });
 }
 
