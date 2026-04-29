@@ -217,12 +217,4 @@
     width: 100%;
   }
 
-  #options-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  }
-
-  #options-list li {
-    min-width: 0;
-  }
 }
