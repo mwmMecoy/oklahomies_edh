@@ -1,0 +1,229 @@
+.pack-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.pack-select-row {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  align-items: center;
+}
+
+#set-select {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 1rem;
+  font-family: 'Georgia', serif;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  min-width: 0;
+}
+
+#set-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#set-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#crack-btn {
+  padding: 0.65rem 1.75rem;
+  background: linear-gradient(135deg, #2e5a8a, var(--accent));
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+#crack-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3a6ea0, var(--accent-hover));
+  box-shadow: 0 4px 22px rgba(91, 159, 214, 0.45);
+  transform: translateY(-1px);
+}
+
+#crack-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#pack-info {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+/* ── Pack display ────────────────────────────────────────────── */
+
+#pack-display {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.6rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pack-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  animation: cardReveal 0.35s ease both;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pack-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  z-index: 10;
+}
+
+.pack-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.card-placeholder {
+  aspect-ratio: 2.5 / 3.5;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Rarity glow effects */
+.pack-card.rare img {
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.5);
+}
+
+.pack-card.rare {
+  outline: 1px solid rgba(201, 168, 76, 0.45);
+  border-radius: 8px;
+}
+
+.pack-card.mythic img {
+  box-shadow: 0 0 16px rgba(230, 140, 50, 0.7);
+}
+
+.pack-card.mythic {
+  outline: 1px solid rgba(230, 140, 50, 0.6);
+  border-radius: 8px;
+}
+
+.pack-card.legendary {
+  outline: 1px solid rgba(180, 130, 230, 0.55);
+  border-radius: 8px;
+}
+
+/* Foil shimmer */
+.pack-card.foil::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(
+    135deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(180, 220, 255, 0.2) 50%,
+    rgba(255, 200, 255, 0.15) 60%,
+    transparent 80%
+  );
+  background-size: 200% 200%;
+  animation: foilShimmer 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes foilShimmer {
+  0%   { background-position: 200% 200%; opacity: 0.6; }
+  50%  { background-position: 0% 0%;     opacity: 1; }
+  100% { background-position: 200% 200%; opacity: 0.6; }
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(12px) rotateX(8deg); }
+  to   { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+
+/* Card label badges */
+.card-label {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.6rem;
+  font-weight: bold;
+  font-family: sans-serif;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+
+.badge-rare     { background: rgba(201, 168, 76, 0.9);  color: #1a1400; }
+.badge-mythic   { background: rgba(230, 130, 40, 0.9);  color: #1a0a00; }
+.badge-foil     { background: rgba(140, 200, 255, 0.9); color: #001828; }
+.badge-legendary { background: rgba(160, 100, 220, 0.9); color: #fff; }
+.badge-wild     { background: rgba(100, 200, 140, 0.9); color: #001a0a; }
+
+/* ── Responsive ───────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  #pack-display {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .pack-select-row {
+    flex-direction: column;
+  }
+
+  #crack-btn {
+    width: 100%;
+  }
+
+  #pack-display {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  #pack-display {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

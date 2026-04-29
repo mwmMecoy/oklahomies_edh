@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crack a Pack — EDH</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="pack.css">
+</head>
+<body>
+  <header>
+    <h1>Crack a Pack</h1>
+    <nav>
+      <a href="../commander/">Random Commander</a>
+      <a href="../wheel/">Chaos Wheel</a>
+      <a href="../brackets/">Bracket Estimator</a>
+      <a href="./" class="active">Crack a Pack</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="pack-controls">
+      <div class="pack-select-row">
+        <select id="set-select" disabled>
+          <option>Loading sets…</option>
+        </select>
+        <button id="crack-btn" disabled>Crack Pack</button>
+      </div>
+      <span id="pack-info"></span>
+    </div>
+
+    <div id="pack-display" class="hidden"></div>
+  </main>
+
+  <script src="pack.js"></script>
+</body>
+</html>

@@ -4,32 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bracket Estimator — EDH</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="brackets.css">
 </head>
 <body>
   <header>
     <h1>EDH Bracket Estimator</h1>
     <nav>
-      <a href="index.html">Random Commander</a>
-      <a href="wheel.html">Chaos Wheel</a>
-      <a href="brackets.html" class="active">Bracket Estimator</a>
+      <a href="../commander/">Random Commander</a>
+      <a href="../wheel/">Chaos Wheel</a>
+      <a href="./" class="active">Bracket Estimator</a>
+      <a href="../packs/">Crack a Pack</a>
     </nav>
   </header>
 
   <main>
     <p class="br-intro">Search for a commander to estimate its typical bracket based on the average EDHREC decklist and known combos from Commander Spellbook.</p>
-
     <div class="search-wrapper">
       <input type="text" id="commander-search" placeholder="Search for a commander…" autocomplete="off">
       <button id="analyze-btn">Analyze</button>
       <ul id="search-dropdown" class="hidden"></ul>
     </div>
-
     <div id="bracket-result" class="hidden"></div>
 
     <div class="br-disclaimer">
-      <p>Bracket estimates are based on the EDHREC average deck. Individual builds may differ significantly. The Game Changers list follows the Commander Rules Committee's official designation..</p>
+      <p>Bracket estimates are based on Commander Spellbook combo data and the Commander Rules Committee's Game Changers list. Individual builds may differ. Run <code>scripts/fetch_brackets.py</code> to regenerate the browse list.</p>
     </div>
   </main>
 

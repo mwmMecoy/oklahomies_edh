@@ -60,7 +60,7 @@ let pauperOnly = false;
 async function init() {
   initColorFilters();
   try {
-    const resp = await fetch('data/commanders.json');
+    const resp = await fetch('../data/commanders.json');
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     allCommanders = await resp.json();
     assignPoolRanks(allCommanders);

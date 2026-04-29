@@ -45,7 +45,7 @@ function toEdhrecSlug(name) {
 }
 
 async function loadCommanders() {
-  const resp = await fetch('data/commanders.json');
+  const resp = await fetch('../data/commanders.json');
   commanders = await resp.json();
 }
 
@@ -253,6 +253,114 @@ function showResult({ commander, bracket, gcInDeck, commanderIsGC, comboData, de
     </div>`;
 }
 
+// ── Browse mode ─────────────────────────────────────────────────
+
+const COLOR_STYLE = {
+  W: 'background:#f0ede0;color:#333',
+  U: 'background:#0e68ab;color:#fff',
+  B: 'background:#2a1f1d;color:#ddd',
+  R: 'background:#d3202a;color:#fff',
+  G: 'background:#00733e;color:#fff',
+  C: 'background:#6e6e6e;color:#fff',
+};
+
+let bracketListData = null;
+let activeBracket = 'optimized';
+
+async function loadBracketList() {
+  if (bracketListData) { renderBracketList(activeBracket); return; }
+
+  document.getElementById('bracket-list-container').innerHTML =
+    '<div class="br-loading">Loading bracket data…</div>';
+
+  try {
+    const resp = await fetch('../data/brackets_list.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    bracketListData = await resp.json();
+    updateTabCounts();
+    renderBracketList(activeBracket);
+  } catch {
+    document.getElementById('bracket-list-container').innerHTML =
+      '<div class="br-error">Bracket list not found — run <code>scripts/fetch_brackets.py</code> to generate it.</div>';
+  }
+}
+
+function updateTabCounts() {
+  const counts = {};
+  bracketListData.forEach(c => { counts[c.bracket] = (counts[c.bracket] || 0) + 1; });
+  document.querySelectorAll('.bracket-tab').forEach(btn => {
+    const n = counts[btn.dataset.bracket] || 0;
+    btn.innerHTML = `${btn.textContent.split('(')[0].trim()} <span class="tab-label">${btn.dataset.bracket === 'optimized' ? '(4–5)' : btn.dataset.bracket === 'upgraded' ? '(3)' : '(1–2)'}</span> <span class="tab-count">${n}</span>`;
+  });
+}
+
+function renderBracketList(bracket) {
+  const container = document.getElementById('bracket-list-container');
+  const list = bracketListData.filter(c => c.bracket === bracket);
+
+  if (list.length === 0) {
+    container.innerHTML = '<p class="br-none" style="padding:1rem">No commanders in this bracket.</p>';
+    return;
+  }
+
+  const rows = list.map(c => {
+    const pips = (c.color_identity.length ? c.color_identity : ['C'])
+      .map(ci => `<span class="bl-pip" style="${COLOR_STYLE[ci] || COLOR_STYLE.C}">${ci}</span>`)
+      .join('');
+
+    const badges = [
+      c.has_two_card_combo ? '<span class="bl-badge bl-badge-combo">2-card</span>' : '',
+      c.is_gc             ? '<span class="bl-badge bl-badge-gc">GC</span>'     : '',
+    ].join('');
+
+    return `<div class="bl-row">
+      <img class="bl-thumb" src="${escapeHtml(c.image_uri)}" alt="" loading="lazy">
+      <div class="bl-info">
+        <span class="bl-name">${escapeHtml(c.name)}</span>
+        <span class="bl-meta">
+          <span class="bl-pips">${pips}</span>
+          ${c.combo_count > 0 ? `<span class="bl-combos">${c.combo_count} combo${c.combo_count !== 1 ? 's' : ''}</span>` : ''}
+          ${badges}
+        </span>
+      </div>
+      <span class="bl-rank">#${c.edhrec_rank.toLocaleString()}</span>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `<div class="bl-list">${rows}</div>`;
+}
+
+function initBrowse() {
+  document.querySelectorAll('.bracket-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.bracket-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeBracket = btn.dataset.bracket;
+      if (bracketListData) renderBracketList(activeBracket);
+    });
+  });
+}
+
+function initModeTabs() {
+  const searchMode = document.getElementById('search-mode');
+  const browseMode = document.getElementById('browse-mode');
+
+  document.getElementById('mode-search').addEventListener('click', function () {
+    document.querySelectorAll('.br-mode-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    searchMode.classList.remove('hidden');
+    browseMode.classList.add('hidden');
+  });
+
+  document.getElementById('mode-browse').addEventListener('click', function () {
+    document.querySelectorAll('.br-mode-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    searchMode.classList.add('hidden');
+    browseMode.classList.remove('hidden');
+    loadBracketList();
+  });
+}
+
 // ── Init ────────────────────────────────────────────────────────
 
 document.getElementById('analyze-btn').addEventListener('click', () => {
@@ -261,3 +369,5 @@ document.getElementById('analyze-btn').addEventListener('click', () => {
 });
 
 loadCommanders().then(() => initAutocomplete());
+initModeTabs();
+initBrowse();
