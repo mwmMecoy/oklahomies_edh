@@ -6,7 +6,8 @@
       "PowerShell(python -m pip install requests)",
       "PowerShell(Start-Process \"http://localhost:8080\")",
       "PowerShell(python -m http.server 8080)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "WebFetch(domain:mightstone.readthedocs.io)"
     ]
   }
 }

@@ -235,9 +235,7 @@ function displayCommander(card) {
   }
 
   const rankEl = document.getElementById('card-edhrec-rank');
-  rankEl.textContent = card.edhrec_rank != null
-    ? `Commander #${card.pool_rank} (EDHREC #${card.edhrec_rank.toLocaleString()})`
-    : `Commander #${card.pool_rank} (unranked)`;
+  rankEl.textContent = `Card rank amongst commanders #${card.pool_rank}`;
 
   document.getElementById('card-scryfall-link').href = card.scryfall_uri;
   document.getElementById('card-edhrec-link').href =
